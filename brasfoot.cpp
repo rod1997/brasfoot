@@ -6,8 +6,6 @@
 
 using namespace std;
 
-int rodadas[45] = {1,2,3,4,5,6,7,8,9,12,13,14,15,16,17,18,19,23,24,25,26,27,28,29,34,35,36,37,38,39,45,46,47,48,49,56,57,58,59,67,68,69,78,79,89};
-int roacon[45];
 int rodatual[5]={0,0,0,0,0};
 
 
@@ -43,53 +41,22 @@ void Times::ini(string nome){
 }
 
 /*=======================================================================================================================*/
-void roda(){
-    int c=0;
-    int roabin=0;
-    for(int m=0;m<5;m++)
-    {
-       rodatual[m]=0;
+void roda(int rodada){
+
+    short int time[9][5] = {{1,23,45,67,89},
+        	               {2,13,46,58,79},
+                	       {3,12,47,59,68},
+          	       	       {4,15,26,37,89},
+                               {5,16,24,38,78},
+                               {6,17,25,39,75},
+                               {7,18,26,34,76},
+                               {8,19,27,35,84},
+                               {9,14,28,36,64}};
+
+    for(int c=0;c < 5;c++){
+         rodatual[c]=time[rodada][c]; 
     }
-    for(int d=0;((d<45) && (c<5));d++){
-       int roabin=0;
-       for(int h=0;h<45;h++){
-           if(rodadas[d]==roacon[h]){
-               roabin=1;
-           }
-       }
 
-       if(roabin==0){
-           int n1,n2,n3,n4;
-           if(rodadas[d] < 10){  n1=0; }else { n1=rodadas[d]/10; n2=rodadas[d]-n1*10; }
-           if(n1==0){
-                for(int j=0;j<5;j++){
-                   if((rodatual[j]<10)&&(rodatual[j] >= 1)){
-                        n1=1;
-                    }
-                }
-                if(n1==0){
-                    rodatual[c]=rodadas[d];
-                    roacon[d]=rodadas[d];
-                    c++;
-                 }
-             }else{
-                  int u=0;
-                  for(int k=0;k<5;k++){
-                      if(rodatual[k] > 10){ n3=rodatual[k]/10; n4=rodatual[k]-n3*10; }
-                      else{ n3=0; n4=rodatual[k]; }
-                      if(!(((n1==n3) || (n1==n4))  || ((n2==n3) || (n2==n4)))){
-                          u+=1;
-                      }
-                  }
-                  if(u==5){
-                      rodatual[c]=rodadas[d];
-                      roacon[d]=rodadas[d];
-                      c++;
-                  }
-
-             }
-       }
-   }
 }
 /*==================================================================================================================================================================*/
 
@@ -103,15 +70,12 @@ int main(){
        time[c]->ini(nomes[c]);
        usleep((c*2000+c*500+1000000));
    }
-   for(int t = 0;t<45;t++){
-       roacon[t]=0;
-   }
    int timeuser;
 /*===================================*/
 
-   for(int ro=0;ro<10;ro++)
+   for(int ro=0;ro < 9;ro++)
    {
-      roda();
+      roda(ro);
 
 
       if(ro==0){
@@ -140,24 +104,24 @@ int main(){
 
               if(rodatual[x] < 10){ t1=0;  t2 = rodatual[x];  }else{ t1 = rodatual[x]/10;  t2 = rodatual[x]-t1*10; }
 
-              int ataque1 = time[t1]->ataque+(time[0]->numaleatorio(0,7));
-              int ataque2 = time[t2]->ataque+(time[0]->numaleatorio(0,7));
-              int defesa1 = time[t1]->defesa+(time[0]->numaleatorio(0,7));
-              int defesa2 = time[t2]->defesa+(time[0]->numaleatorio(0,7));
+              int ataque1 = (time[t1]->ataque) + (time[0]->numaleatorio(0,7));
+              int ataque2 = (time[t2]->ataque) + (time[0]->numaleatorio(0,7));
+              int defesa1 = (time[t1]->defesa) + (time[0]->numaleatorio(0,7));
+              int defesa2 = (time[t2]->defesa) + (time[0]->numaleatorio(0,7));
 
               if(ataque1 > defesa2){ gols[x][0] = ataque1-defesa2; }else if((ataque1==defesa2) || (ataque1 < defesa2)){ gols[x][0]=0;}
 
               if(ataque2 > defesa1){ gols[x][1] = ataque2-defesa1; }else if((ataque2==defesa1) || (ataque2 < defesa1)){ gols[x][1]=0;}
 
-              time[t1]->golmarcados = gols[x][0];
-              time[t1]->golsofridos = gols[x][1];
-              time[t2]->golmarcados = gols[x][1];
-              time[t2]->golsofridos = gols[x][0];
+              time[t1]->golmarcados += gols[x][0];
+              time[t1]->golsofridos += gols[x][1];
+              time[t2]->golmarcados += gols[x][1];
+              time[t2]->golsofridos += gols[x][0];
 
-              if(gols[1]>gols[2]){
+              if(gols[x][0] > gols[x][1]){
                   time[t1]->pontos += 3;
 
-              }else if(gols[2] > gols[1]){
+              }else if(gols[x][1] > gols[x][0]){
                     time[t2]->pontos += 3;
 
               }else{
